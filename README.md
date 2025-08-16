@@ -89,3 +89,33 @@ try {
   console.error('Search failed:', error.message);
 }
 ```
+
+## Development
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+
+### Setup
+```bash
+git clone https://github.com/seeksphere/seeksphere-node-sdk.git
+cd seeksphere-node-sdk
+npm install
+```
+
+### Scripts
+```bash
+npm run build        # Build the project
+npm run test         # Run tests
+npm run test:coverage # Run tests with coverage
+npm run lint         # Run ESLint
+npm run format       # Format code with Prettier
+```
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
