@@ -3,7 +3,6 @@ import { SeekSphereClient } from './index';
 async function example() {
   // Initialize the client
   const client = new SeekSphereClient({
-    baseUrl: 'http://localhost:3004', // Replace with your API URL
     apiKey: 'your-org-id-here', // Replace with your actual org_id
     timeout: 30000
   });
@@ -16,12 +15,16 @@ async function example() {
     }, 'sql_only');
     console.log('Search result:', searchResult);
 
-    // Example 2: Search with full mode
-    console.log('\nSearching with full mode...');
-    const fullSearchResult = await client.search({
-      query: 'analyze customer behavior trends'
-    }, 'full');
-    console.log('Full search result:', fullSearchResult);
+    // Example 2: Search with full mode (will throw error - coming soon)
+    console.log('\nTrying to search with full mode...');
+    try {
+      const fullSearchResult = await client.search({
+        query: 'analyze customer behavior trends'
+      }, 'full');
+      console.log('Full search result:', fullSearchResult);
+    } catch (error) {
+      console.log('Expected error for full mode:', error instanceof Error ? error.message : String(error));
+    }
 
     // Example 3: Update tokens
     console.log('\nUpdating tokens...');

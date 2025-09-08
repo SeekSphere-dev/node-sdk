@@ -26,7 +26,6 @@ export interface ApiResponse<T = any> {
 }
 
 export interface SDKConfig {
-  baseUrl: string;
   apiKey: string; // This is the org_id
   timeout?: number;
 }

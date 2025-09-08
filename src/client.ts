@@ -11,11 +11,12 @@ import {
 
 export class SeekSphereClient {
   private client: AxiosInstance;
+  private static readonly BASE_URL = 'https://api.seeksphere.com';
 
   constructor(config: SDKConfig) {
     
     this.client = axios.create({
-      baseURL: config.baseUrl,
+      baseURL: SeekSphereClient.BASE_URL,
       timeout: config.timeout || 30000,
       headers: {
         'Content-Type': 'application/json',
@@ -43,6 +44,10 @@ export class SeekSphereClient {
    * Search endpoint
    */
   async search(request: SearchRequest, mode: SearchMode = 'sql_only'): Promise<SearchResponse> {
+    if (mode === 'full') {
+      throw new Error('SearchMode "full" is coming soon and not yet supported');
+    }
+
     const response: AxiosResponse<SearchResponse> = await this.client.post('/search', request, {
       headers: {
         'X-Mode': mode

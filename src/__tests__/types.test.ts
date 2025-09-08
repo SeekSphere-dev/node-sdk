@@ -83,7 +83,6 @@ describe('Types', () => {
   describe('SDKConfig', () => {
     it('should accept valid config with timeout', () => {
       const config: SDKConfig = {
-        baseUrl: 'https://api.seeksphere.com',
         apiKey: 'test-key',
         timeout: 5000,
       };
@@ -92,7 +91,6 @@ describe('Types', () => {
 
     it('should accept valid config without timeout', () => {
       const config: SDKConfig = {
-        baseUrl: 'https://api.seeksphere.com',
         apiKey: 'test-key',
       };
       expect(config.timeout).toBeUndefined();

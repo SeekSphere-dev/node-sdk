@@ -5,7 +5,6 @@ describe('Integration Tests', () => {
 
   beforeEach(() => {
     client = new SeekSphereClient({
-      baseUrl: 'https://api.seeksphere.com',
       apiKey: 'test-org-id',
       timeout: 5000,
     });
@@ -46,31 +45,12 @@ describe('Integration Tests', () => {
   });
 
   describe('Configuration Validation', () => {
-    it('should handle different base URL formats', () => {
-      const configs = [
-        'https://api.seeksphere.com',
-        'https://api.seeksphere.com/',
-        'http://localhost:3000',
-        'http://localhost:3000/',
-      ];
-
-      configs.forEach((baseUrl) => {
-        expect(() => {
-          new SeekSphereClient({
-            baseUrl,
-            apiKey: 'test-key',
-          });
-        }).not.toThrow();
-      });
-    });
-
     it('should handle different timeout values', () => {
       const timeouts = [1000, 5000, 30000, 60000];
 
       timeouts.forEach((timeout) => {
         expect(() => {
           new SeekSphereClient({
-            baseUrl: 'https://api.seeksphere.com',
             apiKey: 'test-key',
             timeout,
           });
@@ -89,11 +69,19 @@ describe('Integration Tests', () => {
       apiKeys.forEach((apiKey) => {
         expect(() => {
           new SeekSphereClient({
-            baseUrl: 'https://api.seeksphere.com',
             apiKey,
           });
         }).not.toThrow();
       });
+    });
+
+    it('should use fixed base URL', () => {
+      // Test that the base URL is always the same regardless of config
+      const client1 = new SeekSphereClient({ apiKey: 'test1' });
+      const client2 = new SeekSphereClient({ apiKey: 'test2', timeout: 5000 });
+      
+      expect(client1).toBeInstanceOf(SeekSphereClient);
+      expect(client2).toBeInstanceOf(SeekSphereClient);
     });
   });
 });

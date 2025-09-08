@@ -20,7 +20,6 @@ describe('SeekSphereClient', () => {
   };
   
   const mockConfig = {
-    baseUrl: 'https://api.seeksphere.com',
     apiKey: 'test-org-id',
     timeout: 5000,
   };
@@ -48,7 +47,7 @@ describe('SeekSphereClient', () => {
   describe('Constructor', () => {
     it('should create client with correct configuration', () => {
       expect(mockedAxios.create).toHaveBeenCalledWith({
-        baseURL: mockConfig.baseUrl,
+        baseURL: 'https://api.seeksphere.com',
         timeout: mockConfig.timeout,
         headers: {
           'Content-Type': 'application/json',
@@ -60,14 +59,13 @@ describe('SeekSphereClient', () => {
 
     it('should use default timeout when not provided', () => {
       const configWithoutTimeout = {
-        baseUrl: 'https://api.seeksphere.com',
         apiKey: 'test-org-id',
       };
       
       new SeekSphereClient(configWithoutTimeout);
       
       expect(mockedAxios.create).toHaveBeenCalledWith({
-        baseURL: configWithoutTimeout.baseUrl,
+        baseURL: 'https://api.seeksphere.com',
         timeout: 30000, // default timeout
         headers: {
           'Content-Type': 'application/json',
@@ -115,25 +113,15 @@ describe('SeekSphereClient', () => {
       expect(result).toEqual(mockResponse.data);
     });
 
-    it('should use custom mode when provided', async () => {
-      const mockResponse: AxiosResponse = {
-        data: { success: true, mode: 'full' },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      };
-
-      mockAxiosInstance.post.mockResolvedValue(mockResponse);
-
+    it('should throw error when using full mode', async () => {
       const searchRequest = { query: 'test search query' };
-      await client.search(searchRequest, 'full');
+      
+      await expect(client.search(searchRequest, 'full')).rejects.toThrow(
+        'SearchMode "full" is coming soon and not yet supported'
+      );
 
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/search', searchRequest, {
-        headers: {
-          'X-Mode': 'full',
-        },
-      });
+      // Ensure the API call was never made
+      expect(mockAxiosInstance.post).not.toHaveBeenCalled();
     });
 
     it('should handle search errors', async () => {
