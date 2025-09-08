@@ -14,7 +14,7 @@ export class SeekSphereClient {
   private static readonly BASE_URL = 'https://api.seeksphere.com';
 
   constructor(config: SDKConfig) {
-    
+
     this.client = axios.create({
       baseURL: SeekSphereClient.BASE_URL,
       timeout: config.timeout || 30000,
