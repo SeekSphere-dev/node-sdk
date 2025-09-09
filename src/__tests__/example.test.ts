@@ -24,10 +24,6 @@ describe('Example Usage', () => {
     // Mock the client methods to avoid actual API calls
     const mockClient = {
       search: jest.fn().mockResolvedValue({ success: true }),
-      updateTokens: jest.fn().mockResolvedValue({ success: true }),
-      updateSchema: jest.fn().mockResolvedValue({ success: true }),
-      getTokens: jest.fn().mockResolvedValue({ tokens: {} }),
-      getSchema: jest.fn().mockResolvedValue({ search_schema: {} }),
     };
 
     // Mock the constructor
@@ -41,10 +37,6 @@ describe('Example Usage', () => {
     // Mock the client to throw an error
     const mockClient = {
       search: jest.fn().mockRejectedValue(new Error('API Error')),
-      updateTokens: jest.fn().mockResolvedValue({ success: true }),
-      updateSchema: jest.fn().mockResolvedValue({ success: true }),
-      getTokens: jest.fn().mockResolvedValue({ tokens: {} }),
-      getSchema: jest.fn().mockResolvedValue({ search_schema: {} }),
     };
 
     const { SeekSphereClient } = require('../client');

@@ -26,44 +26,15 @@ async function example() {
       console.log('Expected error for full mode:', error instanceof Error ? error.message : String(error));
     }
 
-    // Example 3: Update tokens
-    console.log('\nUpdating tokens...');
-    const updateTokensResult = await client.updateTokens({
-      tokens: {
-        'product_categories': ['electronics', 'clothing', 'books'],
-        'user_types': ['premium', 'standard', 'trial'],
-        'regions': ['north', 'south', 'east', 'west']
-      }
+    // Example 3: Additional search with different query
+    console.log('\nSearching for different data...');
+    const anotherSearchResult = await client.search({
+      query: 'find all orders from this week'
     });
-    console.log('Update tokens result:', updateTokensResult);
+    console.log('Another search result:', anotherSearchResult);
 
-    // Example 4: Update schema
-    console.log('\nUpdating schema...');
-    const updateSchemaResult = await client.updateSchema({
-      search_schema: {
-        tables: {
-          users: {
-            columns: ['id', 'name', 'email', 'created_at'],
-            types: ['int', 'varchar', 'varchar', 'datetime']
-          },
-          orders: {
-            columns: ['id', 'user_id', 'amount', 'status'],
-            types: ['int', 'int', 'decimal', 'varchar']
-          }
-        }
-      }
-    });
-    console.log('Update schema result:', updateSchemaResult);
-
-    // Example 5: Get current tokens
-    console.log('\nGetting current tokens...');
-    const currentTokens = await client.getTokens();
-    console.log('Current tokens:', currentTokens);
-
-    // Example 6: Get current schema
-    console.log('\nGetting current schema...');
-    const currentSchema = await client.getSchema();
-    console.log('Current schema:', currentSchema);
+    // Note: Token and schema management methods are private and should be managed
+    // through the SeekSphere dashboard instead of programmatically.
 
   } catch (error) {
     console.error('Error:', error instanceof Error ? error.message : String(error));

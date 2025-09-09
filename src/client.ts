@@ -57,33 +57,45 @@ export class SeekSphereClient {
   }
 
   /**
+   * @deprecated WARNING: This method is for internal use only and may be removed in future versions.
+   * Please use the SeekSphere dashboard to manage tokens instead of this API method.
+   * @private
    * Update tokens mapping
    */
-  async updateTokens(request: UpdateTokensRequest): Promise<ApiResponse> {
+  private async updateTokens(request: UpdateTokensRequest): Promise<ApiResponse> {
     const response: AxiosResponse<ApiResponse> = await this.client.put('/org/tokens', request);
     return response.data;
   }
 
   /**
+   * @deprecated WARNING: This method is for internal use only and may be removed in future versions.
+   * Please use the SeekSphere dashboard to manage search schema instead of this API method.
+   * @private
    * Update search schema
    */
-  async updateSchema(request: UpdateSchemaRequest): Promise<ApiResponse> {
+  private async updateSchema(request: UpdateSchemaRequest): Promise<ApiResponse> {
     const response: AxiosResponse<ApiResponse> = await this.client.put('/org/search_schema', request);
     return response.data;
   }
 
   /**
+   * @deprecated WARNING: This method is for internal use only and may be removed in future versions.
+   * Please use the SeekSphere dashboard to view tokens instead of this API method.
+   * @private
    * Get current tokens (helper method)
    */
-  async getTokens(): Promise<{ tokens: Record<string, string[]>; org_id: string }> {
+  private async getTokens(): Promise<{ tokens: Record<string, string[]>; org_id: string }> {
     const response = await this.client.get('/org/tokens');
     return response.data;
   }
 
   /**
+   * @deprecated WARNING: This method is for internal use only and may be removed in future versions.
+   * Please use the SeekSphere dashboard to view search schema instead of this API method.
+   * @private
    * Get current search schema (helper method)
    */
-  async getSchema(): Promise<{ search_schema: any; org_id: string }> {
+  private async getSchema(): Promise<{ search_schema: any; org_id: string }> {
     const response = await this.client.get('/org/search_schema');
     return response.data;
   }

@@ -11,20 +11,14 @@ describe('Integration Tests', () => {
   });
 
   describe('Client Integration', () => {
-    it('should create client and have all expected methods', () => {
+    it('should create client and have expected public methods', () => {
       expect(client).toHaveProperty('search');
-      expect(client).toHaveProperty('updateTokens');
-      expect(client).toHaveProperty('updateSchema');
-      expect(client).toHaveProperty('getTokens');
-      expect(client).toHaveProperty('getSchema');
+      // Note: Private methods still exist at runtime but are not part of the public API
+      expect(typeof client.search).toBe('function');
     });
 
-    it('should have methods that are functions', () => {
+    it('should have public methods that are functions', () => {
       expect(typeof client.search).toBe('function');
-      expect(typeof client.updateTokens).toBe('function');
-      expect(typeof client.updateSchema).toBe('function');
-      expect(typeof client.getTokens).toBe('function');
-      expect(typeof client.getSchema).toBe('function');
     });
   });
 
@@ -35,12 +29,17 @@ describe('Integration Tests', () => {
       expect(typeof client.search).toBe('function');
     });
 
-    it('updateTokens method should accept correct parameters', () => {
-      expect(typeof client.updateTokens).toBe('function');
-    });
-
-    it('updateSchema method should accept correct parameters', () => {
-      expect(typeof client.updateSchema).toBe('function');
+    it('should have search as the main public method', () => {
+      // Verify search method exists and is functional
+      expect(typeof client.search).toBe('function');
+      
+      // In TypeScript, private methods are compile-time only restrictions
+      // They still exist at runtime but should not be used externally
+      const allMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(client))
+        .filter(name => name !== 'constructor' && typeof (client as any)[name] === 'function');
+      
+      expect(allMethods).toContain('search');
+      // Private methods exist but are marked as deprecated and should not be used
     });
   });
 
