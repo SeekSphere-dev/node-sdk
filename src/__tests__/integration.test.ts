@@ -82,5 +82,45 @@ describe('Integration Tests', () => {
       expect(client1).toBeInstanceOf(SeekSphereClient);
       expect(client2).toBeInstanceOf(SeekSphereClient);
     });
+
+    it('should handle edge case configurations', () => {
+      // Test with very short timeout
+      expect(() => {
+        new SeekSphereClient({
+          apiKey: 'test-key',
+          timeout: 1,
+        });
+      }).not.toThrow();
+
+      // Test with very long timeout
+      expect(() => {
+        new SeekSphereClient({
+          apiKey: 'test-key',
+          timeout: 300000, // 5 minutes
+        });
+      }).not.toThrow();
+
+      // Test with empty string API key (should still create client)
+      expect(() => {
+        new SeekSphereClient({
+          apiKey: '',
+        });
+      }).not.toThrow();
+    });
+
+    it('should create multiple clients independently', () => {
+      const client1 = new SeekSphereClient({ apiKey: 'org1' });
+      const client2 = new SeekSphereClient({ apiKey: 'org2', timeout: 10000 });
+      const client3 = new SeekSphereClient({ apiKey: 'org3', timeout: 20000 });
+
+      expect(client1).toBeInstanceOf(SeekSphereClient);
+      expect(client2).toBeInstanceOf(SeekSphereClient);
+      expect(client3).toBeInstanceOf(SeekSphereClient);
+
+      // Each client should be independent
+      expect(client1).not.toBe(client2);
+      expect(client2).not.toBe(client3);
+      expect(client1).not.toBe(client3);
+    });
   });
 });

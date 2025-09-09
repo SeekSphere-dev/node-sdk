@@ -18,7 +18,16 @@
     "prepublishOnly": "npm run lint && npm run test && npm run build",
     "release": "npm version patch && git push && git push --tags"
   },
-  "keywords": ["seeksphere", "search", "api", "sdk", "typescript", "nodejs", "database", "query"],
+  "keywords": [
+    "seeksphere",
+    "search",
+    "api",
+    "sdk",
+    "typescript",
+    "nodejs",
+    "database",
+    "query"
+  ],
   "author": "SeekSphere",
   "license": "MIT",
   "repository": {
@@ -38,10 +47,10 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
     "@types/jest": "^29.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
     "eslint": "^8.0.0",
     "jest": "^29.0.0",
     "prettier": "^3.0.0",

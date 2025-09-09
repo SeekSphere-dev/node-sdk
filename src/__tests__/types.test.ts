@@ -107,5 +107,81 @@ describe('Types', () => {
       const mode: SearchMode = 'full';
       expect(mode).toBe('full');
     });
+
+    it('should work in function parameters', () => {
+      const testFunction = (mode: SearchMode) => mode;
+      expect(testFunction('sql_only')).toBe('sql_only');
+      expect(testFunction('full')).toBe('full');
+    });
+  });
+
+  describe('Complex Type Scenarios', () => {
+    it('should handle SearchResponse with additional properties', () => {
+      const response: SearchResponse = {
+        success: true,
+        org_id: 'test-org',
+        mode: 'sql_only',
+        user_id: 'test-user',
+        results: [{ id: 1, name: 'test' }],
+        sql: 'SELECT * FROM users',
+        execution_time: 150,
+        total_rows: 1,
+      };
+      
+      expect(response.success).toBe(true);
+      expect(response.results).toHaveLength(1);
+      expect(response.sql).toBe('SELECT * FROM users');
+    });
+
+    it('should handle ApiResponse with generic type', () => {
+      const response: ApiResponse<{ data: string[] }> = {
+        success: true,
+        message: 'Operation successful',
+        data: ['item1', 'item2'],
+      };
+      
+      expect(response.success).toBe(true);
+      expect(response.data).toEqual(['item1', 'item2']);
+    });
+
+    it('should handle UpdateTokensRequest with complex tokens', () => {
+      const request: UpdateTokensRequest = {
+        tokens: {
+          'product_categories': ['electronics', 'clothing', 'books', 'home'],
+          'user_roles': ['admin', 'user', 'moderator'],
+          'regions': ['us-east', 'us-west', 'eu-central', 'asia-pacific'],
+          'status_types': ['active', 'inactive', 'pending', 'suspended'],
+        },
+      };
+      
+      expect(Object.keys(request.tokens)).toHaveLength(4);
+      expect(request.tokens.product_categories).toContain('electronics');
+    });
+
+    it('should handle UpdateSchemaRequest with nested schema', () => {
+      const request: UpdateSchemaRequest = {
+        search_schema: {
+          version: '1.0',
+          tables: {
+            users: {
+              columns: ['id', 'name', 'email', 'created_at', 'updated_at'],
+              types: ['int', 'varchar', 'varchar', 'datetime', 'datetime'],
+              indexes: ['id', 'email'],
+            },
+            orders: {
+              columns: ['id', 'user_id', 'amount', 'status', 'created_at'],
+              types: ['int', 'int', 'decimal', 'varchar', 'datetime'],
+              foreign_keys: { user_id: 'users.id' },
+            },
+          },
+          relationships: {
+            'users.orders': 'one-to-many',
+          },
+        },
+      };
+      
+      expect(request.search_schema.tables.users.columns).toHaveLength(5);
+      expect(request.search_schema.tables.orders.foreign_keys.user_id).toBe('users.id');
+    });
   });
 });
