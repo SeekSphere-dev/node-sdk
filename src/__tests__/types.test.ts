@@ -134,7 +134,7 @@ describe('Types', () => {
     });
 
     it('should handle ApiResponse with generic type', () => {
-      const response: ApiResponse<{ data: string[] }> = {
+      const response: ApiResponse = {
         success: true,
         message: 'Operation successful',
         data: ['item1', 'item2'],

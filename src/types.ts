@@ -7,6 +7,10 @@ export interface SearchResponse {
   org_id: string;
   mode: string;
   user_id: string;
+  results?: any[];
+  sql?: string;
+  execution_time?: number;
+  total_rows?: number;
   [key: string]: any;
 }
 
