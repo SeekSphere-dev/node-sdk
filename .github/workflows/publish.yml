@@ -1,19 +1,28 @@
-name: Publish to NPM
+name: Release and Publish
 
 on:
-  # Trigger on new releases
-  release:
-    types: [published]
-  
-  # Allow manual triggering
   workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
-  publish:
+  release-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,19 +38,47 @@ jobs:
         run: npm run lint
 
       - name: Run tests
-        run: npm run test
+        run: npm test
 
       - name: Build package
         run: npm run build
 
-      - name: Update version from release tag
-        if: github.event_name == 'release'
+      - name: Configure Git
         run: |
-          # Extract version from release tag (remove 'v' prefix if present)
-          VERSION="${{ github.event.release.tag_name }}"
-          VERSION="${VERSION#v}"
-          echo "Publishing version: $VERSION"
-          npm version $VERSION --no-git-tag-version
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Bump version and create tag
+        run: |
+          npm version ${{ github.event.inputs.version_type }}
+          echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Push changes and tags
+        run: |
+          git push origin main
+          git push origin --tags
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ env.NEW_VERSION }}"
+          name: "Release v${{ env.NEW_VERSION }}"
+          body: |
+            ## Changes in v${{ env.NEW_VERSION }}
+
+            This release includes the latest changes and improvements.
+
+            ### Installation
+            ```bash
+            npm install seeksphere-sdk@${{ env.NEW_VERSION }}
+            ```
+
+            ### What's Changed
+            - Version bumped to ${{ env.NEW_VERSION }}
+
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/v${{ env.PREVIOUS_VERSION }}...v${{ env.NEW_VERSION }}
+          draft: false
+          prerelease: false
 
       - name: Publish to NPM
         run: npm publish --access public
