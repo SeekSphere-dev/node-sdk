@@ -18,7 +18,7 @@ describe('SeekSphereClient', () => {
     };
 
   };
-  
+
   const mockConfig = {
     apiKey: 'test-org-id',
     timeout: 5000,
@@ -47,7 +47,7 @@ describe('SeekSphereClient', () => {
   describe('Constructor', () => {
     it('should create client with correct configuration', () => {
       expect(mockedAxios.create).toHaveBeenCalledWith({
-        baseURL: 'https://api.seeksphere.com',
+        baseURL: 'https://api.seeksphere.ai',
         timeout: mockConfig.timeout,
         headers: {
           'Content-Type': 'application/json',
@@ -61,11 +61,11 @@ describe('SeekSphereClient', () => {
       const configWithoutTimeout = {
         apiKey: 'test-org-id',
       };
-      
+
       new SeekSphereClient(configWithoutTimeout);
-      
+
       expect(mockedAxios.create).toHaveBeenCalledWith({
-        baseURL: 'https://api.seeksphere.com',
+        baseURL: 'https://api.seeksphere.ai',
         timeout: 30000, // default timeout
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ describe('SeekSphereClient', () => {
 
     it('should throw error when using full mode', async () => {
       const searchRequest = { query: 'test search query' };
-      
+
       await expect(client.search(searchRequest, 'full')).rejects.toThrow(
         'SearchMode "full" is coming soon and not yet supported'
       );
@@ -214,7 +214,7 @@ describe('SeekSphereClient', () => {
       expect((client as any).updateSchema).toBeDefined();
       expect((client as any).getTokens).toBeDefined();
       expect((client as any).getSchema).toBeDefined();
-      
+
       // TypeScript should prevent access to these methods at compile time
       // (Runtime access is still possible but not recommended)
     });

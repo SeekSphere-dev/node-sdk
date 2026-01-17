@@ -11,7 +11,7 @@ import {
 
 export class SeekSphereClient {
   private client: AxiosInstance;
-  private static readonly BASE_URL = 'https://api.seeksphere.com';
+  private static readonly BASE_URL = 'https://api.seeksphere.ai';
 
   constructor(config: SDKConfig) {
 
