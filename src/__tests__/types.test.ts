@@ -42,6 +42,15 @@ describe('Types', () => {
       };
       expect(request.tokens.category1).toEqual(['token1', 'token2']);
     });
+
+    it('should accept numeric token values', () => {
+      const request: UpdateTokensRequest = {
+        tokens: {
+          bedrooms: ['bhk', 1, 2, 3.5],
+        },
+      };
+      expect(request.tokens.bedrooms).toEqual(['bhk', 1, 2, 3.5]);
+    });
   });
 
   describe('UpdateSchemaRequest', () => {
@@ -94,6 +103,14 @@ describe('Types', () => {
         apiKey: 'test-key',
       };
       expect(config.timeout).toBeUndefined();
+    });
+
+    it('should accept a custom baseUrl', () => {
+      const config: SDKConfig = {
+        apiKey: 'test-key',
+        baseUrl: 'https://custom.example.com',
+      };
+      expect(config.baseUrl).toBe('https://custom.example.com');
     });
   });
 

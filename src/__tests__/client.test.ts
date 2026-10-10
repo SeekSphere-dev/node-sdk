@@ -51,8 +51,25 @@ describe('SeekSphereClient', () => {
         timeout: mockConfig.timeout,
         headers: {
           'Content-Type': 'application/json',
-          'X-Org-Id': mockConfig.apiKey,
-          'X-User-Id': 'node_sdk',
+          'X-Api-Key': mockConfig.apiKey,
+        },
+      });
+    });
+
+    it('should use a custom baseUrl when provided', () => {
+      const configWithBaseUrl = {
+        apiKey: 'test-key',
+        baseUrl: 'https://custom.example.com',
+      };
+
+      new SeekSphereClient(configWithBaseUrl);
+
+      expect(mockedAxios.create).toHaveBeenCalledWith({
+        baseURL: 'https://custom.example.com',
+        timeout: 30000,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Api-Key': configWithBaseUrl.apiKey,
         },
       });
     });
@@ -69,8 +86,7 @@ describe('SeekSphereClient', () => {
         timeout: 30000, // default timeout
         headers: {
           'Content-Type': 'application/json',
-          'X-Org-Id': configWithoutTimeout.apiKey,
-          'X-User-Id': 'node_sdk',
+          'X-Api-Key': configWithoutTimeout.apiKey,
         },
       });
     });
@@ -164,15 +180,26 @@ describe('SeekSphereClient', () => {
       expect(result.results).toHaveLength(1);
     });
 
-    it('should throw error when using full mode', async () => {
+    it('should support full mode (deprecated, behaves like sql_only)', async () => {
+      const mockResponse: AxiosResponse = {
+        data: { success: true, mode: 'full' },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      };
+
+      mockAxiosInstance.post.mockResolvedValue(mockResponse);
+
       const searchRequest = { query: 'test search query' };
+      const result = await client.search(searchRequest, 'full');
 
-      await expect(client.search(searchRequest, 'full')).rejects.toThrow(
-        'SearchMode "full" is coming soon and not yet supported'
-      );
-
-      // Ensure the API call was never made
-      expect(mockAxiosInstance.post).not.toHaveBeenCalled();
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/search', searchRequest, {
+        headers: {
+          'X-Mode': 'full',
+        },
+      });
+      expect(result).toEqual(mockResponse.data);
     });
 
     it('should handle search errors', async () => {
@@ -362,6 +389,19 @@ describe('SeekSphereClient', () => {
       };
 
       expect(() => errorCallback(apiError)).toThrow('API Error: 400 - Bad request');
+
+      // Test API error with a machine-readable code
+      const apiErrorWithCode = {
+        response: {
+          status: 403,
+          data: { error: 'You are not a member of this organization', code: 'forbidden' },
+          statusText: 'Forbidden',
+        },
+      };
+
+      expect(() => errorCallback(apiErrorWithCode)).toThrow(
+        'API Error: 403 - You are not a member of this organization (forbidden)'
+      );
 
       // Test API error without error message
       const apiErrorNoMessage = {

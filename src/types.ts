@@ -2,20 +2,29 @@ export interface SearchRequest {
   query: string;
 }
 
+export type SearchSource = 'cache' | 'pattern' | 'llm';
+
 export interface SearchResponse {
   success: boolean;
   org_id: string;
-  mode: string;
-  user_id: string;
-  results?: any[];
+  mode: SearchMode;
+  user_id: string | null;
+  query?: string;
   sql?: string;
-  execution_time?: number;
-  total_rows?: number;
+  source?: SearchSource;
+  processing_time_ms?: number;
+  pattern_used?: Record<string, any> | null;
+  extracted_values?: Record<string, any> | null;
+  learned?: boolean | null;
+  pattern_learning_enabled?: boolean | null;
+  cached?: boolean | null;
   [key: string]: any;
 }
 
+export type TokenValue = string | number;
+
 export interface UpdateTokensRequest {
-  tokens: Record<string, string[]>;
+  tokens: Record<string, TokenValue[]>;
 }
 
 export interface UpdateSchemaRequest {
@@ -26,11 +35,15 @@ export interface ApiResponse<T = any> {
   success?: boolean;
   message?: string;
   error?: string;
+  code?: string;
   [key: string]: any;
 }
 
 export interface SDKConfig {
-  apiKey: string; // This is the org_id
+  /** Per-org API key, created via `POST /org/api-keys` (requires a signed-in session). Sent as `X-Api-Key`. */
+  apiKey: string;
+  /** Overrides the default API base URL. */
+  baseUrl?: string;
   timeout?: number;
 }
 

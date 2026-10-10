@@ -16,12 +16,11 @@ export class SeekSphereClient {
   constructor(config: SDKConfig) {
 
     this.client = axios.create({
-      baseURL: SeekSphereClient.BASE_URL,
+      baseURL: config.baseUrl || SeekSphereClient.BASE_URL,
       timeout: config.timeout || 30000,
       headers: {
         'Content-Type': 'application/json',
-        'X-Org-Id': config.apiKey, // org_id is used as api_key
-        'X-User-Id': 'node_sdk' // Fixed user_id for SDK
+        'X-Api-Key': config.apiKey // Per-org API key, created via POST /org/api-keys
       }
     });
 
@@ -30,7 +29,9 @@ export class SeekSphereClient {
       (response) => response,
       (error) => {
         if (error.response) {
-          throw new Error(`API Error: ${error.response.status} - ${error.response.data?.error || error.response.statusText}`);
+          const code = error.response.data?.code;
+          const reason = error.response.data?.error || error.response.statusText;
+          throw new Error(`API Error: ${error.response.status} - ${reason}${code ? ` (${code})` : ''}`);
         } else if (error.request) {
           throw new Error('Network Error: No response received from server');
         } else {
@@ -41,13 +42,10 @@ export class SeekSphereClient {
   }
 
   /**
-   * Search endpoint
+   * Search endpoint. `mode: 'full'` is deprecated and behaves identically to
+   * 'sql_only'; the API responds with a `Deprecation` header when it is used.
    */
   async search(request: SearchRequest, mode: SearchMode = 'sql_only'): Promise<SearchResponse> {
-    if (mode === 'full') {
-      throw new Error('SearchMode "full" is coming soon and not yet supported');
-    }
-
     const response: AxiosResponse<SearchResponse> = await this.client.post('/search', request, {
       headers: {
         'X-Mode': mode
@@ -59,6 +57,7 @@ export class SeekSphereClient {
   /**
    * @deprecated WARNING: This method is for internal use only and may be removed in future versions.
    * Please use the SeekSphere dashboard to manage tokens instead of this API method.
+   * Requires a signed-in user session; API keys get a 403 (`forbidden`) here.
    * @private
    * Update tokens mapping
    */
@@ -70,6 +69,7 @@ export class SeekSphereClient {
   /**
    * @deprecated WARNING: This method is for internal use only and may be removed in future versions.
    * Please use the SeekSphere dashboard to manage search schema instead of this API method.
+   * Requires a signed-in user session; API keys get a 403 (`forbidden`) here.
    * @private
    * Update search schema
    */
@@ -84,7 +84,7 @@ export class SeekSphereClient {
    * @private
    * Get current tokens (helper method)
    */
-  private async getTokens(): Promise<{ tokens: Record<string, string[]>; org_id: string }> {
+  private async getTokens(): Promise<{ tokens: Record<string, (string | number)[]>; org_id: string }> {
     const response = await this.client.get('/org/tokens');
     return response.data;
   }

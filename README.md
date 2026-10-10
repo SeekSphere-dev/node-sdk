@@ -15,7 +15,7 @@ import { SeekSphereClient } from 'seeksphere-sdk';
 
 // Initialize the client
 const client = new SeekSphereClient({
-  apiKey: 'your-org-id', // Your organization ID from SeekSphere dashboard
+  apiKey: 'your-api-key', // Created via POST /org/api-keys (requires a signed-in session)
   timeout: 30000 // optional, defaults to 30 seconds
 });
 
@@ -27,7 +27,7 @@ const searchResult = await client.search({
 // Search with explicit mode
 const searchResult = await client.search({
   query: 'find top 10 products by sales'
-}, 'sql_only'); // Currently only 'sql_only' is supported
+}, 'sql_only');
 ```
 
 ## API Methods
@@ -35,30 +35,31 @@ const searchResult = await client.search({
 ### `search(request, mode?)`
 - **request**: `{ query: string }`
 - **mode**: `'sql_only' | 'full'` (optional, defaults to 'sql_only')
-  - `'sql_only'`: Currently supported
-  - `'full'`: Coming soon (will throw error if used)
+  - `'sql_only'`: default behavior
+  - `'full'`: deprecated, behaves identically to `'sql_only'` (the API responds with a `Deprecation` header)
 - **returns**: Search results
 
 ## Configuration Management
 
-**Important**: Token and schema management should be done through the SeekSphere dashboard, not programmatically. The SDK focuses on search functionality only.
+**Important**: Token and schema management requires a signed-in user session (Clerk), not
+an API key — calling the internal update methods with an API key returns a 403
+(`forbidden`). Manage tokens and schema through the SeekSphere dashboard instead.
 
 ## Configuration
 
 ### SDK Configuration
-- **Base URL**: Fixed to `https://api.seeksphere.com` (cannot be overridden)
-- **API Key**: Your organization ID from the SeekSphere dashboard
+- **Base URL**: Defaults to `https://api.seeksphere.ai`; override with `baseUrl`
+- **API Key**: A per-org API key created via `POST /org/api-keys`
 - **Timeout**: Optional, defaults to 30 seconds
 
 The SDK automatically sets:
-- `X-Org-Id` header to your provided `apiKey`
-- `X-User-Id` header to `'node_sdk'`
+- `X-Api-Key` header to your provided `apiKey`
 - `Content-Type` header to `'application/json'`
 
 ### Environment Variables (Recommended)
 ```typescript
 const client = new SeekSphereClient({
-  apiKey: process.env.SEEKSPHERE_ORG_ID!,
+  apiKey: process.env.SEEKSPHERE_API_KEY!,
   timeout: parseInt(process.env.SEEKSPHERE_TIMEOUT || '30000')
 });
 ```
